@@ -1,8 +1,21 @@
-import React from 'react';
+'use client';
+import React, { useState } from 'react';
 import { IoSearchOutline, IoShareSocialOutline } from 'react-icons/io5';
 import { useCopyToClipboard } from 'usehooks-ts';
+import TodoListItem from './TodoListItem';
 
-const TodoList = ({ sharedUserFullName = '', ownerUserId = '' }) => {
+const TodoList = ({
+  sharedUserFullName = '',
+  ownerUserId = '',
+  loading = false,
+  todoListData = [],
+  isReadOnly = false,
+  onUpdate = (id, updatedContent) => {},
+  onCreate = () => {},
+  onDelete = (id) => {},
+  onSearch = (terms) => {},
+}) => {
+  const [userSearchInput, setUserSearchInput] = useState('');
   const [copiedText, copy] = useCopyToClipboard();
 
   const handleCopy = () => {
@@ -12,6 +25,11 @@ const TodoList = ({ sharedUserFullName = '', ownerUserId = '' }) => {
       .catch((err) => {
         console.log('Failed to copy!', err);
       });
+  };
+
+  const handleSearchEnd = () => {
+    onSearch(userSearchInput);
+    setUserSearchInput('');
   };
 
   return (
@@ -32,18 +50,50 @@ const TodoList = ({ sharedUserFullName = '', ownerUserId = '' }) => {
             </div>
           )}
         </article>
-        <article className='flex flex-col sm:flex-row gap-4 mt-8'>
-          <div className='flex flex-1 h-[60px]'>
-            <input className='p-4 flex-1 bg-[#F7CB66] border border-black rounded-l-2xl'></input>
-            <div className='w-[60px] flex justify-center items-center bg-black rounded-r-2xl cursor-pointer'>
-              <IoSearchOutline size={40} color='white' />
+        {!isReadOnly && (
+          <article className='flex flex-col sm:flex-row gap-4 mt-8'>
+            <div className='flex flex-1 h-[60px]'>
+              <input
+                value={userSearchInput}
+                onChange={(e) => setUserSearchInput(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') handleSearchEnd();
+                }}
+                className='p-4 flex-1 bg-[#F7CB66] border border-black rounded-l-2xl'
+              ></input>
+              <div
+                onClick={handleSearchEnd}
+                className='w-[60px] flex justify-center items-center bg-black rounded-r-2xl cursor-pointer'
+              >
+                <IoSearchOutline size={40} color='white' />
+              </div>
             </div>
-          </div>
-          <div className='h-[60px] w-[200px] flex justify-center items-center bg-[#7EBB95] border border-black rounded-2xl font-bold cursor-pointer text-[20px]'>
-            New Task
-          </div>
-        </article>
-        <div className='h-[2px] my-10 bg-black'></div>
+            <div
+              onClick={onCreate}
+              className='h-[60px] w-[200px] flex justify-center items-center bg-[#7EBB95] border border-black rounded-2xl font-bold cursor-pointer text-[20px]'
+            >
+              New Task
+            </div>
+          </article>
+        )}
+        <div className='h-[2px] my-10 bg-black'>
+          {todoListData?.length >= 1 ? (
+            <ul className='flex flex-col gap-6'>
+              {(todoListData ?? []).map((todo) => {
+                return (
+                  <TodoListItem
+                    key={todo?.id}
+                    todo={todo}
+                    onUpdate={onUpdate}
+                    onDelete={onDelete}
+                  />
+                );
+              })}
+            </ul>
+          ) : (
+            <div>{loading ? 'Loading...' : 'Empty!'}</div>
+          )}
+        </div>
       </div>
     </section>
   );

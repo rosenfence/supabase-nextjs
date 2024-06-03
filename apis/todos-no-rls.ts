@@ -29,7 +29,7 @@ export const getTodosBySearch = async (terms: string) => {
     .from('todos_no_rls')
     .select('*')
     .is('deleted_at', null)
-    .ilike('contens', `%${terms}`)
+    .ilike('content', `%${terms}`)
     .order('id', { ascending: false });
 
   return result.data;
