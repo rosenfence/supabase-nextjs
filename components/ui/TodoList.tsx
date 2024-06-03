@@ -59,7 +59,7 @@ const TodoList = ({
                 onKeyDown={(e) => {
                   if (e.key === 'Enter') handleSearchEnd();
                 }}
-                className='p-4 flex-1 bg-[#F7CB66] border border-black rounded-l-2xl'
+                className='p-4 flex-1 bg-[#F7CB66] border border-black rounded-l-2xl font-bold'
               ></input>
               <div
                 onClick={handleSearchEnd}
@@ -76,24 +76,18 @@ const TodoList = ({
             </div>
           </article>
         )}
-        <div className='h-[2px] my-10 bg-black'>
-          {todoListData?.length >= 1 ? (
-            <ul className='flex flex-col gap-6'>
-              {(todoListData ?? []).map((todo) => {
-                return (
-                  <TodoListItem
-                    key={todo?.id}
-                    todo={todo}
-                    onUpdate={onUpdate}
-                    onDelete={onDelete}
-                  />
-                );
-              })}
-            </ul>
-          ) : (
-            <div>{loading ? 'Loading...' : 'Empty!'}</div>
-          )}
-        </div>
+        <div className='h-[2px] my-10 bg-black' />
+        {todoListData?.length >= 1 ? (
+          <ul className='flex flex-col gap-6'>
+            {(todoListData ?? []).map((todo) => {
+              return (
+                <TodoListItem key={todo?.id} todo={todo} onUpdate={onUpdate} onDelete={onDelete} />
+              );
+            })}
+          </ul>
+        ) : (
+          <div>{loading ? 'Loading...' : 'Empty!'}</div>
+        )}
       </div>
     </section>
   );
